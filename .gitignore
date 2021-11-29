@@ -1,3 +1,6 @@
 **/.mypy_cache
 **/.idea
 **/.DS_Store
+/nftprediction/logs/
+/data/
+__pycache__/
