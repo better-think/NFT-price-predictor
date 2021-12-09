@@ -8,22 +8,6 @@ from alexnet import AlexNet
 from image_loader import ImageLoader
 
 
-def read_image_and_prices(images_path, prices_path) -> DataFrame:
-    """
-    :param images_path: Path of the images, you can read the whole or part by constraining with a partition
-                        e.g. path-to-images/partition=0
-    :return: a DataFrame of image_loader.ImageAndId
-    """
-    images_df = pd.DataFrame(ImageLoader(images_path).load_images()).set_index('id')
-    images_df['image'] = images_df['image'].apply(normalize_images)
-    prices_df = pd.read_pickle(prices_path, compression='gzip')[['id', 'Price_USD']].set_index('id')
-    return pd.merge(images_df, prices_df, on='id')
-
-
-def normalize_images(image: ndarray):
-    return tf.image.resize(tf.image.per_image_standardization(image), (300, 300))  # TODO Make shape parametric
-
-
 def run(images_path, prices_path):
     image_and_prices_df = read_image_and_prices(images_path, prices_path)
     images = image_and_prices_df['image'].to_numpy()
@@ -47,6 +31,22 @@ def run(images_path, prices_path):
     print(alexnet.output_layer.get_weights())
 
     alexnet.model.evaluate(test_ds)
+
+
+def read_image_and_prices(images_path, prices_path) -> DataFrame:
+    """
+    :param images_path: Path of the images, you can read the whole or part by constraining with a partition
+                        e.g. path-to-images/partition=0
+    :return: a DataFrame of image_loader.ImageAndId
+    """
+    images_df = pd.DataFrame(ImageLoader(images_path).load_images()).set_index('id')
+    images_df['image'] = images_df['image'].apply(normalize_images)
+    prices_df = pd.read_pickle(prices_path, compression='gzip')[['id', 'Price_USD']].set_index('id')
+    return pd.merge(images_df, prices_df, on='id')
+
+
+def normalize_images(image: ndarray):
+    return tf.image.resize(tf.image.per_image_standardization(image), (300, 300))  # TODO Make shape parametric
 
 
 if __name__ == '__main__':
