@@ -5,7 +5,7 @@
 Install using `requirements.txt`
 
 ```shell
-conda create --name nft-price-predictor --file requirements.txt
+conda create --name nft-price-predictor --file conda-requirements.txt
 ```
 
 or install the below directly using `pip` or `conda` (using `pip` may not work at the moment)
