@@ -5,7 +5,7 @@ from image_loader import ImageLoader
 
 
 class TestImageLoader(TestCase):
-    __base_path = 'image-loader-data'
+    __base_path = join('resources', 'image-loader-data')
 
     def test_load_images(self):
         images = ImageLoader(join(self.__base_path, 'images')).load_images()
