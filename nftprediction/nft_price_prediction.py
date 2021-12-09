@@ -55,4 +55,4 @@ def normalize_images(image: ndarray):
 
 
 if __name__ == '__main__':
-    run('../data/images', '../data/nft')
+    run('path-to-images', 'path-to-nft')
