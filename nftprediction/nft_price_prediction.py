@@ -24,9 +24,8 @@ def normalize_images(image: ndarray):
     return tf.image.resize(tf.image.per_image_standardization(image), (300, 300))  # TODO Make shape parametric
 
 
-def main():
-    image_and_prices_df = read_image_and_prices('../data/images',
-                                                '../data/nft')
+def run(images_path, prices_path):
+    image_and_prices_df = read_image_and_prices(images_path, prices_path)
     images = image_and_prices_df['image'].to_numpy()
     prices = image_and_prices_df['Price_USD'].to_numpy()
     images = np.array(images.tolist())
@@ -51,4 +50,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run('../data/images', '../data/nft')
