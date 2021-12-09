@@ -10,27 +10,32 @@ from image_loader import ImageLoader
 
 def run(images_path, prices_path):
     image_and_prices_df = read_image_and_prices(images_path, prices_path)
-    images = image_and_prices_df['image'].to_numpy()
+    images = np.array(image_and_prices_df['image'].to_numpy().tolist())
     prices = image_and_prices_df['Price_USD'].to_numpy()
-    images = np.array(images.tolist())
-    prices = prices.reshape((prices.shape[0], 1))
+    reshaped_prices = prices.reshape((prices.shape[0], 1))
 
-    images_length = images.shape[0]
-    percent_60 = int(images_length * .6)
-    percent_80 = int(images_length * .8)
-    train_images, validation_images, test_images = images[:percent_60], images[percent_60:percent_80], images[
-                                                                                                       percent_80:]
-    train_prices, validation_prices, test_prices = prices[:percent_60], prices[percent_60:percent_80], prices[
-                                                                                                       percent_80:]
+    train_images, validation_images, test_images = split_data_as_train_validation_test(.6, .2, images)
+    train_prices, validation_prices, test_prices = split_data_as_train_validation_test(.6, .2, reshaped_prices)
 
-    train_ds = tf.data.Dataset.from_tensor_slices((train_images, train_prices)).batch(batch_size=2)
-    validation_ds = tf.data.Dataset.from_tensor_slices((validation_images, validation_prices)).batch(batch_size=2)
-    test_ds = tf.data.Dataset.from_tensor_slices((test_images, test_prices)).batch(batch_size=2)
+    train_ds = create_tf_dataset(train_images, train_prices)
+    validation_ds = create_tf_dataset(validation_images, validation_prices)
+    test_ds = create_tf_dataset(test_images, test_prices)
+
     alexnet = AlexNet((300, 300, 3))
     alexnet.model.fit(train_ds, epochs=2, validation_data=validation_ds)
+    alexnet.model.evaluate(test_ds)
     print(alexnet.output_layer.get_weights())
 
-    alexnet.model.evaluate(test_ds)
+
+def split_data_as_train_validation_test(train_ratio, validation_ratio, data):
+    data_length = data.shape[0]
+    train_part = int(data_length * .6)
+    validation_part = int(data_length * (train_ratio + validation_ratio))
+    return data[:train_part], data[train_part:validation_part], data[validation_part:]
+
+
+def create_tf_dataset(data, labels):
+    return tf.data.Dataset.from_tensor_slices((data, labels)).batch(batch_size=2)  # TODO Parameterize batch_size
 
 
 def read_image_and_prices(images_path, prices_path) -> DataFrame:
