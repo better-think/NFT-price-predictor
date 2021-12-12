@@ -12,7 +12,7 @@ class TestImageLoader(TestCase):
         [self.assert_image_has_3_channels(image_and_id.image) for image_and_id in images]
 
     def assert_image_has_3_channels(self, image):
-        self.assertEquals(image.shape[2], 3)
+        self.assertEqual(image.shape[2], 3)
 
     def test_find_png_files(self):
         base_path = join(self.__base_path, 'images')
