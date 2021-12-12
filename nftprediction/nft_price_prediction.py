@@ -27,17 +27,6 @@ def run(images_path, prices_path):
     print(alexnet.output_layer.get_weights())
 
 
-def split_data_as_train_validation_test(train_ratio, validation_ratio, data):
-    data_length = data.shape[0]
-    train_part = int(data_length * .6)
-    validation_part = int(data_length * (train_ratio + validation_ratio))
-    return data[:train_part], data[train_part:validation_part], data[validation_part:]
-
-
-def create_tf_dataset(data, labels):
-    return tf.data.Dataset.from_tensor_slices((data, labels)).batch(batch_size=2)  # TODO Parameterize batch_size
-
-
 def read_image_and_prices(images_path, prices_path) -> DataFrame:
     """
     :param images_path: Path of the images, you can read the whole or part by constraining with a partition
@@ -52,6 +41,17 @@ def read_image_and_prices(images_path, prices_path) -> DataFrame:
 
 def normalize_images(image: ndarray):
     return tf.image.resize(tf.image.per_image_standardization(image), (300, 300))  # TODO Make shape parametric
+
+
+def split_data_as_train_validation_test(train_ratio, validation_ratio, data):
+    data_length = data.shape[0]
+    train_part = int(data_length * .6)
+    validation_part = int(data_length * (train_ratio + validation_ratio))
+    return data[:train_part], data[train_part:validation_part], data[validation_part:]
+
+
+def create_tf_dataset(data, labels):
+    return tf.data.Dataset.from_tensor_slices((data, labels)).batch(batch_size=2)  # TODO Parameterize batch_size
 
 
 if __name__ == '__main__':
