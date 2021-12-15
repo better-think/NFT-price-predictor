@@ -6,7 +6,7 @@ from pandas import DataFrame
 
 from alexnet import AlexNet
 from image_loader import ImageLoader
-
+from tensorflow.keras import Model
 
 def run(images_path, prices_path):
     image_and_prices_df = read_image_and_prices(images_path, prices_path)
@@ -24,7 +24,13 @@ def run(images_path, prices_path):
     alexnet = AlexNet((300, 300, 3))
     alexnet.model.fit(train_ds, epochs=2, validation_data=validation_ds)
     alexnet.model.evaluate(test_ds)
-    print(alexnet.output_layer.get_weights())
+
+    intermediate_feature_extraction_model = Model(alexnet.model.input, alexnet.output_layer.output)
+
+    all_ds = create_tf_dataset(images, reshaped_prices)
+    alexnet_features = intermediate_feature_extraction_model.predict(all_ds)
+    print(alexnet_features.shape)
+    print(alexnet_features)
 
 
 def read_image_and_prices(images_path, prices_path) -> DataFrame:
